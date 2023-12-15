@@ -14,6 +14,11 @@ class Faixa
         return ($valorOrigem >= $this->valorOrigem) && ($valorOrigem < $this->valorOrigem + $this->tamanhoFaixa);
     }
 
+    public function contemValorDestino(int $valorDestino): bool
+    {
+        return ($valorDestino >= $this->valorDestino) && ($valorDestino < $this->valorDestino + $this->tamanhoFaixa);
+    }
+
     public function getDiferencaOrigemDestino(): int
     {
         return $this->valorDestino - $this->valorOrigem;

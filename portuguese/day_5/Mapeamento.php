@@ -38,8 +38,31 @@ class Mapeamento
         return $valorOrigem + $faixa->getDiferencaOrigemDestino();
     }
 
-    public function getDestino()
+    public function getDestino(): string
     {
         return $this->destino;
+    }
+
+    public function getOrigem(): string
+    {
+        return $this->origem;
+    }
+
+    public function mapearOrigem($valorDestino): int
+    {
+        /**
+         * @var Faixa|null $faixa
+         */
+        $faixa = current(
+            array_filter($this->faixasDePares, function (Faixa $faixa) use ($valorDestino) {
+                return $faixa->contemValorDestino($valorDestino);
+            })
+        );
+
+        if (!$faixa) {
+            return $valorDestino;
+        }
+
+        return $valorDestino - $faixa->getDiferencaOrigemDestino();
     }
 }

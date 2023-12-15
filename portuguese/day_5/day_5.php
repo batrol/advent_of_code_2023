@@ -9,7 +9,11 @@ $desafio = new Desafio('puzzle_input.txt');
 $desafio->lerArquivo();
 $desafio->imprimirTempoGasto();
 
-$localizacaoMaisProxima = $desafio->mapear();
+//$localizacaoMaisProxima = $desafio->mapear();
+//$desafio->imprimirTempoGasto();
+//echo sprintf('A localização mais próxima é %d', $localizacaoMaisProxima) . PHP_EOL;
+
+$localizacaoMaisProxima = $desafio->mapear2();
 $desafio->imprimirTempoGasto();
 
 echo sprintf('A localização mais próxima é %d', $localizacaoMaisProxima) . PHP_EOL;
