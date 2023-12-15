@@ -4,8 +4,8 @@ spl_autoload_register(function ($class_name) {
     include $class_name . '.php';
 });
 
-$desafio = new Desafio('example_puzzle_input_1.txt');
-//$desafio = new Desafio('puzzle_input.txt');
+//$desafio = new Desafio('example_puzzle_input_1.txt');
+$desafio = new Desafio('puzzle_input.txt');
 $desafio->lerArquivo();
 $desafio->imprimirTempoGasto();
 

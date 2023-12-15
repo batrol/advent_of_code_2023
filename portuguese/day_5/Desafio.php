@@ -3,7 +3,7 @@
 class Desafio
 {
     /**
-     * @var int[]
+     * @var int[][]
      */
     private array $sementes;
 
@@ -19,7 +19,8 @@ class Desafio
         $this->inicio = microtime(true);
     }
 
-    public function imprimirTempoGasto(): void{
+    public function imprimirTempoGasto(): void
+    {
         $agora = microtime(true);
 
         echo sprintf('%.4f segundos se passaram', $agora - $this->inicio) . PHP_EOL;
@@ -29,7 +30,9 @@ class Desafio
     {
         $linhas = array_filter(explode(PHP_EOL, file_get_contents($this->caminhoDoArquivo)));
 
-        $this->sementes = explode(' ', str_replace('seeds: ', '', array_shift($linhas)));
+        $sementes = explode(' ', str_replace('seeds: ', '', array_shift($linhas)));
+
+        $this->sementes = array_chunk($sementes, 2);
 
         $this->mapas = [];
         $mapeamento = new Mapeamento('', '');
@@ -51,26 +54,26 @@ class Desafio
     public function mapear(): int
     {
         $localizacaoMaisProxima = -1;
-        foreach ($this->sementes as $semente) {
-//            list($listNumeroDaSemente, $quantidadeDeSementes) = $semente;
+        foreach ($this->sementes as $sementesEQuantidades) {
+            list($listNumeroDaSemente, $quantidadeDeSementes) = $sementesEQuantidades;
 
-            $origem = 'seed';
-            $valorOrigem = $semente;
-            $valorDestino = -1;
-            while ($mapeamento = ($this->mapas[$origem] ?? null)) {
-                $valorDestino = $mapeamento->mapear($valorOrigem);
+            for ($semente = $listNumeroDaSemente; $semente < $listNumeroDaSemente + $quantidadeDeSementes; $semente++) {
+                $origem = 'seed';
+                $valorOrigem = $semente;
+                $valorDestino = -1;
+                while ($mapeamento = ($this->mapas[$origem] ?? null)) {
+                    $valorDestino = $mapeamento->mapear($valorOrigem);
 
-                $origem = $mapeamento->getDestino();
-                $valorOrigem = $valorDestino;
+                    $origem = $mapeamento->getDestino();
+                    $valorOrigem = $valorDestino;
+                }
+
+                if ($valorDestino < $localizacaoMaisProxima || $localizacaoMaisProxima === -1) {
+                    $localizacaoMaisProxima = $valorDestino;
+                }
+//            echo sprintf('Semente %d => Localização %d', $semente, $valorDestino) . PHP_EOL;
             }
-
-            if ($valorDestino < $localizacaoMaisProxima || $localizacaoMaisProxima === -1) {
-                $localizacaoMaisProxima = $valorDestino;
-            }
-
-            echo sprintf('Semente %d => Localização %d', $semente, $valorDestino) . PHP_EOL;
-
-            $this->imprimirTempoGasto($inicio);
+            $this->imprimirTempoGasto();
         }
 
         return $localizacaoMaisProxima;
