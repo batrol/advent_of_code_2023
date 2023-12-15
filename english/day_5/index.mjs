@@ -16,8 +16,8 @@ const mapping = splitNewLine.reduce((accumulator, line) => {
 
         accumulator = {
             ...accumulator,
-            [type]: {
-                [element]: []
+            [element]: {
+                [type]: []
             }
         }
 
@@ -25,11 +25,14 @@ const mapping = splitNewLine.reduce((accumulator, line) => {
     } else {
         const [destination, source, range] = line.split(' ')
 
-        accumulator[type][element].push([Number(source), Number(destination), Number(range)])
+        accumulator[element][type].push([Number(source), Number(destination), Number(range)])
     }
 
     return accumulator
 }, {})
+
+console.log(mapping);
+exit;
 
 let smallestLocation = -1
 
