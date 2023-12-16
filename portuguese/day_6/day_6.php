@@ -11,3 +11,10 @@ $desafio->lerArquivo();
 $possibilidadesDeVitoria = $desafio->calcularPossibilidadesDeVitoria();
 
 echo sprintf('O número de possibilidades de vitória é %d', $possibilidadesDeVitoria) . PHP_EOL;
+
+//parte 2
+$desafio->lerArquivo2();
+
+$possibilidadesDeVitoria = $desafio->calcularPossibilidadesDeVitoria();
+
+echo sprintf('O número de possibilidades de vitória é %d', $possibilidadesDeVitoria) . PHP_EOL;

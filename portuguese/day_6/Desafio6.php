@@ -29,6 +29,16 @@ class Desafio6
         $this->imprimirTempoGasto('ler arquivo');
     }
 
+    public function lerArquivo2(): void
+    {
+        list($tempos, $distancias) = array_filter(explode(PHP_EOL, file_get_contents($this->caminhoDoArquivo)));
+
+        $this->tempos = $this->extrairDados2($tempos);
+        $this->distancias = $this->extrairDados2($distancias);
+
+        $this->imprimirTempoGasto('ler arquivo');
+    }
+
     public function calcularPossibilidadesDeVitoria(): int
     {
         $possibilidades = 1;
@@ -61,6 +71,23 @@ class Desafio6
                 ' ',
                 str_replace(['Time:', 'Distance:'], '', $linha)
             )
+        );
+
+        array_walk($dados, function (&$dado) {
+            $dado = (int)$dado;
+        });
+
+        return array_values($dados);
+    }
+
+    /**
+     * @return int[]
+     */
+    private function extrairDados2(string $linha): array
+    {
+        $dados = explode(
+            ' ',
+            str_replace(['Time:', 'Distance:', ' '], '', $linha)
         );
 
         array_walk($dados, function (&$dado) {
