@@ -85,9 +85,24 @@ class Mao
         return 3; // two pair
     }
 
-    public function getCartasParaOrdenacao(): string
+    public function getCartasParaOrdenacao(): int
     {
-        return str_replace(array_keys(self::MAPA), self::MAPA, $this->cartas);
+//        $cartas = str_split(str_replace(array_keys(self::MAPA), self::MAPA, $this->cartas));
+        $cartas = str_split($this->cartas);
+
+        $pontos = 0;
+        foreach ($cartas as $index => $carta) {
+            $base = (int)(pow(15, (count($cartas) - $index)));
+            if (is_numeric($carta)) {
+                $pontos += ((int)$carta) * $base;
+
+                continue;
+            }
+
+            $pontos += self::MAPA2[$carta] * $base;
+        }
+
+        return $pontos;
     }
 
     public function getBid(): int

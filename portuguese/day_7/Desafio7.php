@@ -65,7 +65,8 @@ class Desafio7
             $pontuacaoB = $b->getPontosPorTipo();
 
             if ($pontuacaoA === $pontuacaoB) {
-                return strcmp($a->getCartasParaOrdenacao(), $b->getCartasParaOrdenacao());
+                return $a->getCartasParaOrdenacao() < $b->getCartasParaOrdenacao() ? -1 : 1;
+//                return strcmp($a->getCartasParaOrdenacao(), $b->getCartasParaOrdenacao());
             }
 
             return $pontuacaoA < $pontuacaoB ? -1 : 1;

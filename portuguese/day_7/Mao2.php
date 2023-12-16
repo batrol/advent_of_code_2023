@@ -3,11 +3,11 @@
 class Mao2
 {
     private const MAPA = [
-        'A' => 'E',
-        'K' => 'D',
-        'Q' => 'C',
-        'J' => '1',
-        'T' => 'B',
+        'A' => 13,
+        'K' => 12,
+        'Q' => 11,
+        'J' => 1,
+        'T' => 10,
     ];
 
     private int $pontosPorTipo;
@@ -54,6 +54,10 @@ class Mao2
             break;
         }
 
+        if (count($quantidades) === 1) {
+            return 7; //five of a kind
+        }
+
         if (count($quantidades) === 5) {
             return 1; //high card
         }
@@ -85,9 +89,23 @@ class Mao2
         return 3; // two pair
     }
 
-    public function getCartasParaOrdenacao(): string
+    public function getCartasParaOrdenacao(): int
     {
-        return str_replace(array_keys(self::MAPA), self::MAPA, $this->cartas);
+        $cartas = str_split($this->cartas);
+
+        $pontos = 0;
+        foreach ($cartas as $index => $carta) {
+            $base = (int)(pow(15, (count($cartas) - $index)));
+            if (is_numeric($carta)) {
+                $pontos += ((int)$carta) * $base;
+
+                continue;
+            }
+
+            $pontos += self::MAPA[$carta] * $base;
+        }
+
+        return $pontos;
     }
 
     public function getBid(): int

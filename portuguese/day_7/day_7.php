@@ -23,3 +23,4 @@ $ganhos = $desafio->calcularMaos(2);
 echo sprintf('O total de ganhos para as mãos apresentadas é %d', $ganhos) . PHP_EOL;
 //250414375 (too low)
 //251303347 (too high)
+//250506580
