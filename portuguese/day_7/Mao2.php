@@ -1,20 +1,13 @@
 <?php
 
-class Mao
+class Mao2
 {
     private const MAPA = [
-        'A' => 'F',
-        'K' => 'E',
-        'Q' => 'D',
-        'J' => 'C',
+        'A' => 'E',
+        'K' => 'D',
+        'Q' => 'C',
+        'J' => '1',
         'T' => 'B',
-    ];
-    private const MAPA2 = [
-        'A' => 14,
-        'K' => 13,
-        'Q' => 12,
-        'J' => 11,
-        'T' => 10,
     ];
 
     private int $pontosPorTipo;
@@ -24,7 +17,6 @@ class Mao
         private readonly int $bid,
     ) {
         $this->pontosPorTipo = $this->calcularPontosPorTipo();
-//        echo $this->pontosPorTipo . PHP_EOL;
     }
 
     public function getPontosPorTipo(): int
@@ -34,7 +26,6 @@ class Mao
 
     private function calcularPontosPorTipo(): int
     {
-//        echo ($this->cartas) . PHP_EOL;
         $cartas = str_split($this->cartas);
 
         $quantidades = [];
@@ -48,7 +39,20 @@ class Mao
             $quantidades[$carta]++;
         }
 
-//        echo (count($quantidades)) . PHP_EOL;
+        if (count($quantidades) === 1) {
+            return 7; //five of a kind
+        }
+
+        $quantidadeCoringas = $quantidades['J'] ?? 0;
+        unset($quantidades['J']);
+
+        arsort($quantidades);
+
+        foreach ($quantidades as $carta => $quantidade) {
+            $quantidades[$carta] += $quantidadeCoringas;
+
+            break;
+        }
 
         if (count($quantidades) === 5) {
             return 1; //high card
@@ -56,10 +60,6 @@ class Mao
 
         if (count($quantidades) === 4) {
             return 2; //one pair
-        }
-
-        if (count($quantidades) === 1) {
-            return 7; //five of a kind
         }
 
         if (count(array_filter($quantidades, function ($quantidade) {
