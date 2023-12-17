@@ -9,6 +9,11 @@ class Desafio9
      */
     private array $sequencias;
 
+    /**
+     * @var Sequencia[]
+     */
+    private array $sequenciasReversas;
+
     public function __construct(private readonly string $caminhoDoArquivo)
     {
         $this->inicio = microtime(true);
@@ -20,7 +25,9 @@ class Desafio9
 
         $this->sequencias = [];
         foreach ($linhas as $linha) {
-            $this->sequencias[] = new Sequencia(explode(' ', $linha));
+            $elementos = explode(' ', $linha);
+            $this->sequencias[] = new Sequencia($elementos);
+            $this->sequenciasReversas[] = new Sequencia(array_reverse($elementos));
         }
 
         $this->imprimirTempoGasto('ler arquivo');
@@ -31,15 +38,25 @@ class Desafio9
         $proximosElementos = [];
 
         foreach ($this->sequencias as $sequencia) {
-//            echo '____' . PHP_EOL;
             $proximosElementos[] = $sequencia->descobrirProximoElemento();
         }
-
-//        print_r($proximosElementos);
 
         $this->imprimirTempoGasto('calcular sequencias');
 
         return array_sum($proximosElementos);
+    }
+
+    public function calcularSequenciasAnteriores(): int
+    {
+        $elementosAnteriores = [];
+
+        foreach ($this->sequenciasReversas as $sequencia) {
+            $elementosAnteriores[] = $sequencia->descobrirProximoElemento();
+        }
+
+        $this->imprimirTempoGasto('calcular sequencias anteriores');
+
+        return array_sum($elementosAnteriores);
     }
 
     private function imprimirTempoGasto(string $acao): void
