@@ -40,18 +40,17 @@ class Desafio8
         }
     }
 
-    public function calcularCaminho(): int
+    public function calcularCaminho(string $proximoNo, string $noDestino): int
     {
         $passos = 0;
-        $proximoNo = 'AAA';
-        while ($proximoNo !== 'ZZZ') {
+        while (!str_ends_with($proximoNo, $noDestino)) {
             foreach ($this->instrucoes as $instrucao) {
                 $no = $this->mapa[$proximoNo];
 
                 $proximoNo = $no->getNo($instrucao);
                 $passos++;
 
-                if ($proximoNo === 'ZZZ') {
+                if (str_ends_with($proximoNo, $noDestino)) {
                     break;
                 }
             }
@@ -62,45 +61,38 @@ class Desafio8
         return $passos;
     }
 
+    public function calcularCaminhoSimultaneamente(): int|GMP
+    {
+        $nosIniciais = array_filter(array_keys($this->mapa), function ($no) {
+            return str_ends_with($no, 'A');
+        });
+
+        $todosOsPassos = [];
+        foreach ($nosIniciais as $no) {
+            $todosOsPassos[] = $this->calcularCaminho($no, 'Z');
+        }
+
+        $todosOsPassos = array_unique($todosOsPassos);
+
+        while (count($todosOsPassos) > 1) {
+            var_dump($todosOsPassos);
+
+            $num1 = array_shift($todosOsPassos);
+            $num2 = array_shift($todosOsPassos);
+
+            $mmc = gmp_lcm($num1, $num2);
+            $todosOsPassos[] = $mmc;
+        }
+
+        $this->imprimirTempoGasto('calcular caminho todos os passos');
+
+        return array_shift($todosOsPassos);
+    }
+
     private function imprimirTempoGasto(string $acao): void
     {
         $agora = microtime(true);
 
         echo sprintf('%.4f segundos se passaram para %s', $agora - $this->inicio, $acao) . PHP_EOL;
-    }
-
-    private function ordenarMaos(int $parteDesafio): void
-    {
-        usort($this->maos2, function (Mao|Mao2 $a, Mao|Mao2 $b) {
-            $pontuacaoA = $a->getPontosPorTipo();
-            $pontuacaoB = $b->getPontosPorTipo();
-
-            if ($pontuacaoA === $pontuacaoB) {
-                return $a->getCartasParaOrdenacao() < $b->getCartasParaOrdenacao() ? -1 : 1;
-//                return strcmp($a->getCartasParaOrdenacao(), $b->getCartasParaOrdenacao());
-            }
-
-            return $pontuacaoA < $pontuacaoB ? -1 : 1;
-        });
-    }
-
-    private function calcularPontuacoes(int $parteDesafio): array
-    {
-        $pontuacoes = [];
-        foreach ($parteDesafio === 1 ? $this->maos : $this->maos2 as $index => $mao) {
-            echo sprintf(
-                    'Mao %s %s - %d - %d - %d',
-                    $mao->getCartas(),
-                    $mao->getCartasParaOrdenacao(),
-                    $mao->getBid(),
-                    $index + 1,
-                    $mao->getPontosPorTipo()
-                ) . PHP_EOL;
-            $pontuacoes[] = $mao->getBid() * ($index + 1);
-        }
-
-//        print_r($pontuacoes);
-
-        return $pontuacoes;
     }
 }
