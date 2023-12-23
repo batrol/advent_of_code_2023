@@ -75,40 +75,18 @@ class Desafio12
     {
         $count = 0;
 
-        foreach ($this->fontes as $i => $fonte3) {
-            $fontes2 = [$fonte3];
+        foreach ($this->fontes as $i => $fonte) {
             $tamanhos = $this->tamanhos[$i];
+            $count += $this->substituir(
+                $fonte,
+                $tamanhos,
+                0,
+                array_sum($tamanhos),
+                substr_count($fonte, '?'),
+                substr_count($fonte, '#')
+            );
 
-            $modificado = true;
-            while ($modificado) {
-                $modificado = false;
-
-                foreach ($fontes2 as $j => $fonte) {
-                    if (!str_contains($fonte, '?')) {
-                        continue;
-                    }
-
-                    $pos = strpos($fonte, '?');
-                    if ($pos === 0) {
-                        $fonte1 = '#' . substr($fonte, 1);
-                        $fonte2 = '.' . substr($fonte, 1);
-                    } elseif ($pos === strlen($fonte) - 1) {
-                        $fonte1 = substr($fonte, 0, $pos) . '#';
-                        $fonte2 = substr($fonte, 0, $pos) . '.';
-                    } else {
-                        $fonte1 = substr($fonte, 0, $pos) . '#' . substr($fonte, $pos + 1);
-                        $fonte2 = substr($fonte, 0, $pos) . '.' . substr($fonte, $pos + 1);
-                    }
-
-                    unset($fontes2[$j]);
-                    $fontes2[] = $fonte1;
-                    $fontes2[] = $fonte2;
-
-                    $modificado = true;
-                }
-            }
-
-            $count += $this->removerInvalidos($fontes2, $tamanhos);
+            $this->imprimirTempoGasto('substituir desconhecidos ' . $i . ' / ' . $count);
         }
 
         $this->imprimirTempoGasto('substituir desconhecidos');
@@ -116,28 +94,72 @@ class Desafio12
         return $count;
     }
 
-    public function removerInvalidos($fontes3, $tamanhos): int
+    private function ehValido(string $fontes2, array $tamanhos): int
     {
-        foreach ($fontes3 as $i => $fontes2) {
-            $fontes = array_values(array_filter(explode('.', $fontes2)));
+        $fontes = array_values(array_filter(explode('.', $fontes2)));
 
-            if (count($fontes) !== count($tamanhos)) {
-                unset($fontes3[$i]);
+        if (count($fontes) !== count($tamanhos)) {
+            return 0;
+        }
 
-                continue;
-            }
-
-            foreach ($fontes as $k => $fonte) {
-                if (strlen($fonte) !== $tamanhos[$k]) {
-                    unset($fontes3[$i]);
-
-                    break;
-                }
+        foreach ($fontes as $k => $fonte) {
+            if (strlen($fonte) !== $tamanhos[$k]) {
+                return 0;
             }
         }
 
-        $this->imprimirTempoGasto('remover invalidos');
+        return 1;
+    }
 
-        return count($fontes3);
+    private function ehValido2(string $fontes2, array $tamanhos): bool
+    {
+        $fontes3 = explode('?', $fontes2)[0];
+        $pop = str_ends_with($fontes3, '#');
+
+        $fontes = array_values(array_filter(explode('.', $fontes3)));
+
+        if ($pop) {
+            array_pop($fontes);
+        }
+
+        foreach ($fontes as $k => $fonte) {
+            if (strlen($fonte) !== $tamanhos[$k]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function substituir(
+        string $fonte,
+        array $tamanhos,
+        int $count,
+        int $qtFontesEsperadas,
+        int $qtInterrogacoes,
+        int $qtFontes,
+    ): int {
+        if ($qtInterrogacoes === 0) {
+            return $count + $this->ehValido($fonte, $tamanhos);
+        }
+
+        if ($qtFontes > $qtFontesEsperadas) {
+            return $count;
+        }
+
+        if ($qtInterrogacoes + $qtFontes < $qtFontesEsperadas) {
+            return $count;
+        }
+
+        if (!$this->ehValido2($fonte, $tamanhos)) {
+            return $count;
+        }
+
+        $fonte1 = preg_replace('/\?/', '#', $fonte, 1);
+        $fonte2 = preg_replace('/\?/', '.', $fonte, 1);
+
+        return $count
+            + $this->substituir($fonte2, $tamanhos, $count, $qtFontesEsperadas, $qtInterrogacoes - 1, $qtFontes)
+            + $this->substituir($fonte1, $tamanhos, $count, $qtFontesEsperadas, $qtInterrogacoes - 1, $qtFontes + 1);
     }
 }
