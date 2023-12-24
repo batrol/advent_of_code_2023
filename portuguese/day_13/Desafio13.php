@@ -50,6 +50,61 @@ class Desafio13
 
         $this->imprimirTempoGasto('encontrar reflexos');
 
+//        print_r($reflexos);
+
+        return array_sum($reflexos) ?? 0;
+    }
+
+    public function encontrarReflexos2(): int
+    {
+        $reflexos = [];
+
+        foreach ($this->padroes as $padraoOriginal) {
+            $tamanho = count($padraoOriginal) * count($padraoOriginal[0]);
+
+            $reflexoOriginal = $this->encontrarReflexo($padraoOriginal, 100);
+            if ($reflexoOriginal === 0) {
+                $padraoOriginal2 = $this->transpor($padraoOriginal);
+                $reflexoOriginal = $this->encontrarReflexo($padraoOriginal2, 1);
+            }
+
+            $encontrou = false;
+//            for ($i = 0; $i < $tamanho; $i++) {
+            for ($i = 88; $i < 89; $i++) {
+                $padrao = $this->substituirPeca($padraoOriginal, $i);
+
+                print_r($i);
+                echo PHP_EOL;
+                $this->imprimir($padrao);
+
+                $reflexo = $this->encontrarReflexo($padrao, 100);
+                if ($reflexo === 0) {
+                    $padrao = $this->transpor($padrao);
+                    $reflexo = $this->encontrarReflexo($padrao, 1);
+                }
+
+                if ($reflexo > 0 && $reflexo !== $reflexoOriginal) {
+//                    array_walk($padrao, function (&$linha) {
+//                        $linha = implode('', $linha);
+//                    });
+//                    print_r($padrao);
+
+                    $reflexos[] = $reflexo;
+                    $encontrou = true;
+
+                    break;
+                }
+            }
+
+//            if (!$encontrou) {
+//                $reflexos[] = $reflexoOriginal;
+//            }
+        }
+
+        $this->imprimirTempoGasto('encontrar reflexos 2');
+
+        print_r($reflexos);
+
         return array_sum($reflexos) ?? 0;
     }
 
@@ -83,7 +138,7 @@ class Desafio13
      */
     private function encontrarReflexo(array $padrao, int $peso): int
     {
-        for ($i = 0; $i < count($padrao) -1; $i++) {
+        for ($i = 0; $i < count($padrao) - 1; $i++) {
             $inicio1 = 0;
             $fim1 = $i;
             $inicio2 = $i + 1;
@@ -109,11 +164,48 @@ class Desafio13
 //            print_r($parte2);
 //            exit;
 
+//            echo 'Parte 1' . PHP_EOL;
+//            $this->imprimir($parte1);
+//            echo 'Parte 2' . PHP_EOL;
+//            $this->imprimir($parte2);
+//            echo 'Fim' . PHP_EOL;
+
             if ($parte1 === $parte2) {
                 return ($i + 1) * $peso;
             }
         }
 
         return 0;
+    }
+
+    /**
+     * @param string[][] $padrao
+     */
+    private function substituirPeca(array $padrao, int $i): array
+    {
+//        $x = $i % count($padrao);
+//        $y = floor($i / count($padrao));
+        $y = $i % count($padrao[0]);
+        $x = floor($i / count($padrao[0]));
+
+        $peca = $padrao[$x][$y];
+        if ($peca === '#') {
+            $padrao[$x][$y] = '.';
+        } else {
+            $padrao[$x][$y] = '#';
+        }
+
+        return $padrao;
+    }
+
+    /**
+     * @param string[][] $padrao
+     */
+    private function imprimir(array $padrao): void
+    {
+        foreach ($padrao as $linha) {
+            echo implode('', $linha) . PHP_EOL;
+        }
+        echo PHP_EOL;
     }
 }
