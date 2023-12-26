@@ -9,6 +9,11 @@ class Desafio15
      */
     private array $sequencia;
 
+    /**
+     * @var string[][]
+     */
+    private array $caixas;
+
     public function __construct(private readonly string $caminhoDoArquivo)
     {
         $this->inicio = microtime(true);
@@ -44,7 +49,7 @@ class Desafio15
     private function traduzirPasso(string $passo): int
     {
         $caracteres = str_split($passo);
-        $resultado =0;
+        $resultado = 0;
         foreach ($caracteres as $caractere) {
             $resultado += ord($caractere);
             $resultado *= 17;
@@ -52,5 +57,50 @@ class Desafio15
         }
 
         return $resultado;
+    }
+
+    public function substituirLentes(): int
+    {
+        for ($i = 0; $i < 256; $i++) {
+            $this->caixas[$i] = [];
+        }
+
+        foreach ($this->sequencia as $passo) {
+            if (str_contains($passo, '-')) {
+                $this->removerLente($passo);
+            } else {
+                $this->adicionarLente($passo);
+            }
+        }
+
+        $caixas = array_filter($this->caixas);
+
+        foreach ($caixas as $caixa => $lentes){
+            $i = 0;
+            while ($lente = array_shift($lentes)) {
+                $i++;
+
+                $resultado[] = ($caixa + 1) * $i * $lente;
+            }
+        }
+
+        return array_sum($resultado);
+    }
+
+    private function adicionarLente(string $passo): void
+    {
+        list($lente, $foco) = explode('=', $passo);
+        $caixa = $this->traduzirPasso($lente);
+
+        $this->caixas[$caixa][$lente] = $foco;
+    }
+
+    private function removerLente(string $passo): void
+    {
+
+        list($lente, $foco) = explode('-', $passo);
+        $caixa = $this->traduzirPasso($lente);
+
+        unset($this->caixas[$caixa][$lente]);
     }
 }
