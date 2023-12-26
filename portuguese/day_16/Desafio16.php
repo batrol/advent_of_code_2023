@@ -2,7 +2,7 @@
 
 class Desafio16
 {
-    private const DIRECAO_DIREITA = 'D';
+    public const DIRECAO_DIREITA = 'D';
     private const DIRECAO_ESQUERDA = 'E';
     private const DIRECAO_CIMA = 'C';
     private const DIRECAO_BAIXO = 'B';
@@ -67,15 +67,44 @@ class Desafio16
         $this->imprimirTempoGasto('ler arquivo');
     }
 
-    public function mapearPartesEnergizadas(): int
+    public function mapearPartesEnergizadas(int $x, int $y,string $direcao): int
     {
-        $this->percorrerMapa(-1, 0, self::DIRECAO_DIREITA);
-//        $this->imprimir2D($this->mapa);
-//        var_dump($this->mapaEnergizado);
+        $this->percorrerMapa($x, $y, $direcao);
 
         $this->imprimirTempoGasto('mapear partes energizadas');
 
         return $this->contarPartesEnergizadas();
+    }
+
+    public function mapearPartesEnergizadasComMaiorPotencial(): int{
+        $primeiraLinha = 0;
+        $primeiraColuna = 0;
+        $ultimaLinha = count($this->mapa) - 1;
+        $ultimaColuna = count($this->mapa[0]) - 1;
+
+        $cantos = [];
+        for ($i = 0; $i <= $ultimaColuna; $i++) {
+            $cantos[] = [$i, $primeiraLinha, self::DIRECAO_BAIXO];
+            $cantos[] = [$i, $ultimaLinha, self::DIRECAO_CIMA];
+        }
+
+        for ($i = 0; $i <= $ultimaLinha; $i++) {
+            $cantos[] = [$primeiraColuna, $i, self::DIRECAO_DIREITA];
+            $cantos[] = [$ultimaColuna, $i, self::DIRECAO_ESQUERDA];
+        }
+
+        $partesEnergizadas = [];
+        foreach ($cantos as $canto) {
+            $this->mapaEnergizado = [];
+            $this->passosExecutados = [];
+
+            list ($x, $y, $direcao) = $canto;
+            $partesEnergizadas[] = $this->mapearPartesEnergizadas($x, $y, $direcao);
+        }
+
+        $this->imprimirTempoGasto('mapear partes energizadas com maior potencial');
+
+        return max($partesEnergizadas);
     }
 
     private function percorrerMapa(int $x, int $y, string $direcao): void
